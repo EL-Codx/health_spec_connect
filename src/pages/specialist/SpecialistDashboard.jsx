@@ -4,7 +4,6 @@ import { Table } from "react-bootstrap";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
-import { FaCalendarAlt, FaHourglassHalf, FaCheckCircle } from "react-icons/fa";
 
 const data = [
   { name: "Mon", consultations: 2 },
@@ -17,34 +16,19 @@ const data = [
 const SpecialistDashboard = () => {
   return (
     <div>
-        <h2 className="mb-4">Welcome Back, Dr. Mensah</h2>
+      <h2 className="mb-4">Welcome Back, Dr. Mensah</h2>
 
-        <div className="row mb-4">
-            <div className="col-md-4">
-                <DashboardCard
-                label="Total Appointments"
-                count="24"
-                icon={<FaCalendarAlt size={25} />}
-                bg="warning"
-                />
-            </div>
-            <div className="col-md-4">
-                <DashboardCard
-                label="Pending Appointments"
-                count="6"
-                icon={<FaHourglassHalf size={25} />}
-                bg="primary"
-                />
-            </div>
-            <div className="col-md-4">
-                <DashboardCard
-                label="Completed Consultations"
-                count="18"
-                icon={<FaCheckCircle size={25} />}
-                bg="success"
-                />
-            </div>
+      <div className="row mb-4">
+        <div className="col-md-4">
+          <DashboardCard title="Total Appointments" value="24" icon="calendar" />
         </div>
+        <div className="col-md-4">
+          <DashboardCard title="Pending Appointments" value="6" icon="clock" />
+        </div>
+        <div className="col-md-4">
+          <DashboardCard title="Completed Consultations" value="18" icon="check-circle" />
+        </div>
+      </div>
 
       <h5>Consultation Trends This Week</h5>
       <div style={{ width: "100%", height: 300 }}>

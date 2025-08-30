@@ -1,48 +1,87 @@
-import React, { useState } from 'react';
-import {
-  Table, Button, Form, InputGroup, Modal
-} from 'react-bootstrap';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Table, Button, Form, InputGroup, Modal } from 'react-bootstrap';
+
 
 const Users = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Staff', status: 'Inactive' },
-  ]);
-
-  const [searchTerm, setSearchTerm] = useState('');
+  const [users, setUsers] = useState([]);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    role: "",
+    // status: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
-  // New User Form State
-  const [newUser, setNewUser] = useState({
-    name: '',
-    email: '',
-    role: 'Admin',
-    status: 'Active',
-  });
+  // Fetch users on component load
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewUser(prev => ({ ...prev, [name]: value }));
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/users/");
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+    }
   };
 
-  const handleAddUser = () => {
-    if (!newUser.name || !newUser.email) return alert("Name and Email are required.");
-
-    setUsers(prev => [
-      ...prev,
-      { ...newUser, id: prev.length + 1 }
-    ]);
-    setNewUser({ name: '', email: '', role: 'Admin', status: 'Active' });
-    handleClose();
+  // ✅ Handle form input change
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Add new user
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const res = await fetch("http://localhost:5000/api/users/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setMessage(`User created! Temporary password: ${data.password}`);
+        setForm({ name: "", email: "", role: "" });
+        fetchUsers(); // refresh table
+      } else {
+        setMessage( data.error);
+      }
+    } catch (err) {
+      setMessage("Error adding user");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete user
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/users/${id}`);
+      alert("User deleted successfully");
+      fetchUsers(); // Refresh list
+    } catch (err) {
+      console.error("Error deleting user:", err);
+      alert("Error deleting user. Check console.");
+    }
+  };
+
+  // console.log(user)
+
 
   return (
     <div>
@@ -54,7 +93,7 @@ const Users = () => {
       <InputGroup className="mb-3" style={{ maxWidth: '400px' }}>
         <Form.Control
           placeholder="Search by name..."
-          onChange={(e) => setSearchTerm(e.target.value)}
+          // onChange={(e) => setSearchTerm(e.target.value)}
         />
       </InputGroup>
 
@@ -65,23 +104,24 @@ const Users = () => {
             <th>Name</th>
             <th>Email</th>
             <th>Role</th>
-            <th>Status</th>
+            {/* <th>Status</th> */}
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user, index) => (
-              <tr key={user.id}>
+          {users.length > 0 ? (
+            users.map((user, index) => (
+              <tr key={user._id || index}>
                 <td>{index + 1}</td>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>{user.role}</td>
-                <td>{user.status}</td>
+                {/* <td>{user.status}</td> */}
                 <td>
                   <Button variant="warning" size="sm" className="me-2">Edit</Button>
-                  <Button variant="danger" size="sm">Delete</Button>
+                  <Button variant="danger" size="sm" onClick={() => handleDelete(user._id || index)}>Delete</Button>
                 </td>
+                {/* {console.log(user._id)} */}
               </tr>
             ))
           ) : (
@@ -103,8 +143,8 @@ const Users = () => {
               <Form.Label>Name</Form.Label>
               <Form.Control
                 name="name"
-                value={newUser.name}
-                onChange={handleInputChange}
+                value={form.name}
+                onChange={handleChange}
                 placeholder="Enter full name"
               />
             </Form.Group>
@@ -114,33 +154,34 @@ const Users = () => {
               <Form.Control
                 name="email"
                 type="email"
-                value={newUser.email}
-                onChange={handleInputChange}
+                value={form.email}
+                onChange={handleChange}
                 placeholder="Enter email"
               />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Role</Form.Label>
-              <Form.Select name="role" value={newUser.role} onChange={handleInputChange}>
-                <option>Admin</option>
-                <option>Support</option>
-                <option>Staff</option>
+              <Form.Select name="role" value={form.role} onChange={handleChange}>
+                <option value="">Select role</option>
+                <option value="admin">Admin</option>
+                <option value="support">Support</option>
               </Form.Select>
             </Form.Group>
 
-            <Form.Group>
+            {/* <Form.Group>
               <Form.Label>Status</Form.Label>
-              <Form.Select name="status" value={newUser.status} onChange={handleInputChange}>
-                <option>Active</option>
-                <option>Inactive</option>
+              <Form.Select name="status" value={form.status} onChange={handleChange}>
+                <option value="">Select status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
               </Form.Select>
-            </Form.Group>
+            </Form.Group> */}
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>Cancel</Button>
-          <Button variant="primary" onClick={handleAddUser}>Add User</Button>
+          <Button variant="primary" onClick={handleSubmit}>Add User</Button>
         </Modal.Footer>
       </Modal>
     </div>

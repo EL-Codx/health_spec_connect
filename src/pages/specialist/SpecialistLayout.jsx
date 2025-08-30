@@ -8,8 +8,8 @@ const SpecialistLayout = () => {
     { path: "/specialist", name: "Dashboard" },
     { path: "/specialist/appointments", name: "Appointments" },
     { path: "/specialist/patients", name: "My Patients" },
-    { path: "/specialist/profile", name: "Profile" },
     { path: "/specialist/reports", name: "Reports" },
+    { path: "/specialist/messages", name: "Chats" },
   ];
 
   return (

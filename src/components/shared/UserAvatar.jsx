@@ -2,7 +2,7 @@ import React from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { PersonCircle } from 'react-bootstrap-icons';
 
-const UserAvatar = ({ user, size = 30 }) => {
+const UserAvatar = ({ user, size = 30, handleLogout }) => {
   const avatarStyle = {
     width: size,
     height: size,
@@ -22,7 +22,7 @@ const UserAvatar = ({ user, size = 30 }) => {
       <Dropdown.Menu align="end">
         <Dropdown.Item href="/dashboard/profile">Profile</Dropdown.Item>
         <Dropdown.Divider />
-        <Dropdown.Item href="/logout">Logout</Dropdown.Item>
+        <Dropdown.Item onClick={ handleLogout }>Logout</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );
