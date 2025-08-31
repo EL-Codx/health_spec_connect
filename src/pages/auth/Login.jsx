@@ -21,9 +21,12 @@ function LoginUI() {
       const data = await response.json();
 
       if (response.ok) {
-        login(data); // save user in context + localStorage
+        login(data); // save user in context
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", data._id);
+        // localStorage.setItem("user", JSON.stringify(data.user));
 
-        // 🔹 Redirect based on role
+        // Redirect based on role
         if (data.role === "admin") navigate("/dashboard");
         else if (data.role === "specialist") navigate("/specialist");
         else if (data.role === "patient") navigate("/patient");

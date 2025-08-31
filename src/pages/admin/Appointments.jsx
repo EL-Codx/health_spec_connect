@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, Button, Badge } from 'react-bootstrap';
 // import AppointmentForm from './AppointmentForm';
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
-//   const [showForm, setShowForm] = useState(false);
 
-  const handleCreate = (newAppt) => {
-    setAppointments([
-      ...appointments,
-      { ...newAppt, id: Date.now(), createdAt: new Date(), status: 'Pending' },
-    ]);
-    setShowForm(false);
-  };
+  // fetch appointments
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:5000/api/appointments", {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setAppointments(Array.isArray(data) ? data : []);
+        // console.log(data);
+      })
+      .catch((err) => console.error("Error fetching appointments:", err));
+  }, []);
 
   return (
     <div>
@@ -36,10 +44,10 @@ const Appointments = () => {
         </thead>
         <tbody>
           {appointments.map((appt, idx) => (
-            <tr key={appt.id}>
+            <tr key={appt._id}>
               <td>{idx + 1}</td>
-              <td>{appt.patientName}</td>
-              <td>{appt.specialistName || 'Unassigned'}</td>
+              <td>{appt.patient.name}</td>
+              <td>{appt.specialist.name || 'Unassigned'}</td>
               <td>{appt.date}</td>
               <td>{appt.time}</td>
               <td>
@@ -54,8 +62,7 @@ const Appointments = () => {
               </td>
               <td>{appt.reason}</td>
               <td>
-                <Button size="sm" variant="success" className="me-2">Approve</Button>
-                <Button size="sm" variant="danger">Reject</Button>
+                <Button size="sm" variant="primary" className="me-2">View Details</Button>
               </td>
             </tr>
           ))}

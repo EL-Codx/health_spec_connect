@@ -2,22 +2,30 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Form, InputGroup, Modal } from 'react-bootstrap';
 
-
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
     name: "",
     email: "",
     role: "",
-    // status: ""
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Modal State
+  // Modal State for Add
   const [showModal, setShowModal] = useState(false);
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
+
+  // Modal State for Edit
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const handleEditClose = () => setShowEditModal(false);
+  const handleEditShow = (user) => {
+    setCurrentUser(user);
+    setForm({ name: user.name, email: user.email, role: user.role });
+    setShowEditModal(true);
+  };
 
   // Fetch users on component load
   useEffect(() => {
@@ -34,7 +42,7 @@ const Users = () => {
     }
   };
 
-  // ✅ Handle form input change
+  // Handle form input change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -59,12 +67,28 @@ const Users = () => {
         setForm({ name: "", email: "", role: "" });
         fetchUsers(); // refresh table
       } else {
-        setMessage( data.error);
+        setMessage(data.error);
       }
     } catch (err) {
       setMessage("Error adding user");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Update user
+  const handleUpdate = async () => {
+    if (!currentUser) return;
+    try {
+      const res = await axios.put(`http://localhost:5000/api/users/${currentUser._id}`, form);
+      if (res.status === 200) {
+        alert("User updated successfully");
+        fetchUsers();
+        handleEditClose();
+      }
+    } catch (err) {
+      console.error("Error updating user:", err);
+      alert("Error updating user. Check console.");
     }
   };
 
@@ -80,9 +104,6 @@ const Users = () => {
     }
   };
 
-  // console.log(user)
-
-
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -93,7 +114,6 @@ const Users = () => {
       <InputGroup className="mb-3" style={{ maxWidth: '400px' }}>
         <Form.Control
           placeholder="Search by name..."
-          // onChange={(e) => setSearchTerm(e.target.value)}
         />
       </InputGroup>
 
@@ -104,7 +124,6 @@ const Users = () => {
             <th>Name</th>
             <th>Email</th>
             <th>Role</th>
-            {/* <th>Status</th> */}
             <th>Actions</th>
           </tr>
         </thead>
@@ -116,12 +135,23 @@ const Users = () => {
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>{user.role}</td>
-                {/* <td>{user.status}</td> */}
                 <td>
-                  <Button variant="warning" size="sm" className="me-2">Edit</Button>
-                  <Button variant="danger" size="sm" onClick={() => handleDelete(user._id || index)}>Delete</Button>
+                  <Button
+                    variant="warning"
+                    size="sm"
+                    className="me-2"
+                    onClick={() => handleEditShow(user)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => handleDelete(user._id || index)}
+                  >
+                    Delete
+                  </Button>
                 </td>
-                {/* {console.log(user._id)} */}
               </tr>
             ))
           ) : (
@@ -168,20 +198,55 @@ const Users = () => {
                 <option value="support">Support</option>
               </Form.Select>
             </Form.Group>
-
-            {/* <Form.Group>
-              <Form.Label>Status</Form.Label>
-              <Form.Select name="status" value={form.status} onChange={handleChange}>
-                <option value="">Select status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </Form.Select>
-            </Form.Group> */}
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>Cancel</Button>
           <Button variant="primary" onClick={handleSubmit}>Add User</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Edit User Modal */}
+      <Modal show={showEditModal} onHide={handleEditClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Enter full name"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="Enter email"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Role</Form.Label>
+              <Form.Select name="role" value={form.role} onChange={handleChange}>
+                <option value="">Select role</option>
+                <option value="admin">Admin</option>
+                <option value="support">Support</option>
+              </Form.Select>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleEditClose}>Cancel</Button>
+          <Button variant="primary" onClick={handleUpdate}>Update User</Button>
         </Modal.Footer>
       </Modal>
     </div>

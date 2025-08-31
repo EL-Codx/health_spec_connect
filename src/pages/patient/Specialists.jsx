@@ -1,46 +1,93 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Button, Row, Col, Modal, Form } from "react-bootstrap";
 
-const specialists = [
-  {
-    id: 1,
-    name: "Dr. Ama Mensah",
-    specialty: "Cardiologist",
-    description: "Expert in heart health and cardiovascular diseases.",
-    image: "https://via.placeholder.com/150"
-  },
-  {
-    id: 2,
-    name: "Dr. Kwame Boateng",
-    specialty: "Dermatologist",
-    description: "Specialist in skin, hair, and nail conditions.",
-    image: "https://via.placeholder.com/150"
-  },
-  {
-    id: 3,
-    name: "Dr. Efua Agyeman",
-    specialty: "Neurologist",
-    description: "Focuses on brain and nervous system disorders.",
-    image: "https://via.placeholder.com/150"
-  }
-];
 
 const Specialists = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedSpecialist, setSelectedSpecialist] = useState(null);
+  const [specialists, setSpecialists] = useState([])
+  const [appointmentData, setAppointmentData] = useState({
+    date: "",
+    time: "",
+    note: "",
+  });
+
+
+  // Fetch users on component load
+  useEffect(() => {
+    fetchSpecialists();
+  }, []);
+
+
+  const fetchSpecialists = async () => {
+  try {
+    const res = await fetch("http://localhost:5000/api/users/specialists");
+    const data = await res.json();
+    setSpecialists(data);
+    console.log(data)
+  } catch (err) {
+    console.error("Error fetching specialists:", err);
+  }
+};
 
   const handleBookClick = (specialist) => {
     setSelectedSpecialist(specialist);
     setShowModal(true);
   };
 
-  const handleClose = () => setShowModal(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here, send appointment booking to backend
-    alert(`Appointment booked with ${selectedSpecialist.name}!`);
+  const handleClose = () => {
     setShowModal(false);
+    setAppointmentData({ date: "", time: "", note: "" });
+  };
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   // Here, send appointment booking to backend
+  //   alert(`Appointment booked with ${selectedSpecialist.name}!`);
+  //   setShowModal(false);
+  // };
+
+
+  // Appointment creation
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const patientId = localStorage.getItem("user");
+  const token = localStorage.getItem("token");
+  // const user = JSON.parse(localStorage.getItem("user"));
+  // const patientId = user?._id;
+
+  const newAppointment = {
+    specialist: selectedSpecialist._id,  
+    patient: patientId,                  
+    date: appointmentData.date,
+    time: appointmentData.time,
+    reason: appointmentData.note,         
+  };
+
+  
+    try {
+      // const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:5000/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(newAppointment),
+      });
+
+      if (res.ok) {
+        alert(`Appointment booked with ${selectedSpecialist.name}!`);
+        handleClose();
+      } else {
+        const errData = await res.json();
+        alert("Error: " + errData.message);
+      }
+    } catch (err) {
+      console.error("Error booking appointment:", err);
+      alert("Booking failed!");
+    }
   };
 
   return (
@@ -48,7 +95,7 @@ const Specialists = () => {
       <h3 className="mb-4 fw-bold text-primary">Available Specialists</h3>
       <Row xs={1} md={2} lg={3} className="g-4">
         {specialists.map((spec) => (
-          <Col key={spec.id}>
+          <Col key={spec._id }>
             <Card className="h-100 shadow-sm border-0">
               <Card.Img
                 variant="top"
@@ -85,15 +132,31 @@ const Specialists = () => {
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                   <Form.Label>Date</Form.Label>
-                  <Form.Control type="date" required />
+                  <Form.Control
+                    type="date"
+                    required
+                    value={appointmentData.date}
+                    onChange={e => setAppointmentData({ ...appointmentData, date: e.target.value })}
+                  />
                 </Form.Group>
                 <Form.Group className="mb-3">
                   <Form.Label>Time</Form.Label>
-                  <Form.Control type="time" required />
+                  <Form.Control
+                    type="time"
+                    required
+                    value={appointmentData.time}
+                    onChange={e => setAppointmentData({ ...appointmentData, time: e.target.value })}
+                  />
                 </Form.Group>
                 <Form.Group className="mb-3">
                   <Form.Label>Notes</Form.Label>
-                  <Form.Control as="textarea" rows={3} placeholder="Reason for appointment" />
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    placeholder="Reason for appointment"
+                    value={appointmentData.note}
+                    onChange={e => setAppointmentData({ ...appointmentData, note: e.target.value })}
+                  />
                 </Form.Group>
                 <div className="d-grid">
                   <Button type="submit" variant="success">
