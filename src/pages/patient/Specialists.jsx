@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button, Row, Col, Modal, Form } from "react-bootstrap";
+import { PersonCircle } from "react-bootstrap-icons";
 
 
 const Specialists = () => {
@@ -9,7 +10,7 @@ const Specialists = () => {
   const [appointmentData, setAppointmentData] = useState({
     date: "",
     time: "",
-    note: "",
+    reason: "",
   });
 
 
@@ -23,8 +24,9 @@ const Specialists = () => {
   try {
     const res = await fetch("http://localhost:5000/api/users/specialists");
     const data = await res.json();
-    setSpecialists(data);
     console.log(data)
+    setSpecialists(data);
+    // console.log(data)
   } catch (err) {
     console.error("Error fetching specialists:", err);
   }
@@ -37,37 +39,34 @@ const Specialists = () => {
 
   const handleClose = () => {
     setShowModal(false);
-    setAppointmentData({ date: "", time: "", note: "" });
+    setAppointmentData({ date: "", time: "", reason: "" });
   };
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   // Here, send appointment booking to backend
-  //   alert(`Appointment booked with ${selectedSpecialist.name}!`);
-  //   setShowModal(false);
-  // };
 
 
   // Appointment creation
   const handleSubmit = async (e) => {
   e.preventDefault();
 
-  const patientId = localStorage.getItem("user");
+  const retrieved = localStorage.getItem("user");
+  const user = JSON.parse(retrieved)
   const token = localStorage.getItem("token");
-  // const user = JSON.parse(localStorage.getItem("user"));
-  // const patientId = user?._id;
+
+  // console.log(token)
+  // console.log(patientId)
+
+  // console.log("Specialist: ", selectedSpecialist._id)
+  // console.log("Patient: ", user._id)
 
   const newAppointment = {
     specialist: selectedSpecialist._id,  
-    patient: patientId,                  
+    patient: user._id,                  
     date: appointmentData.date,
     time: appointmentData.time,
-    reason: appointmentData.note,         
+    reason: appointmentData.reason,         
   };
-
+  
   
     try {
-      // const token = localStorage.getItem("token");
       const res = await fetch("http://localhost:5000/api/appointments", {
         method: "POST",
         headers: {
@@ -90,20 +89,48 @@ const Specialists = () => {
     }
   };
 
+
+  const formatImageUrl = (path) => {
+  if (!path) return null;
+
+  // Check if "uploads" exists
+  let idx = path.indexOf("uploads");
+  if (idx === -1) {
+    // No uploads in string
+    return null;
+  }
+
+  // Extract from uploads onward
+  let relativePath = path.substring(idx);
+
+  // Replace backslashes with forward slashes
+  relativePath = relativePath.replace(/\\/g, "/");
+
+  return `http://localhost:5000/${relativePath}`;
+}
+
+
+
   return (
     <div>
+      {/* {newAppointment.specialist} */}
       <h3 className="mb-4 fw-bold text-primary">Available Specialists</h3>
       <Row xs={1} md={2} lg={3} className="g-4">
         {specialists.map((spec) => (
           <Col key={spec._id }>
             <Card className="h-100 shadow-sm border-0">
+              {spec.image && formatImageUrl(spec.image) ? (
               <Card.Img
                 variant="top"
-                src={spec.image}
+                src={formatImageUrl(spec.image)}
                 alt={spec.name}
                 className="p-3 rounded-circle"
                 style={{ width: "120px", height: "120px", objectFit: "cover", margin: "0 auto" }}
               />
+               ) : (
+                <PersonCircle size={60} color="gray" className="mx-auto d-block"/>
+              )}
+              
               <Card.Body className="text-center">
                 <Card.Title>{spec.name}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">{spec.specialty}</Card.Subtitle>
@@ -149,13 +176,13 @@ const Specialists = () => {
                   />
                 </Form.Group>
                 <Form.Group className="mb-3">
-                  <Form.Label>Notes</Form.Label>
+                  <Form.Label>Reasons</Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={3}
                     placeholder="Reason for appointment"
-                    value={appointmentData.note}
-                    onChange={e => setAppointmentData({ ...appointmentData, note: e.target.value })}
+                    value={appointmentData.reason}
+                    onChange={e => setAppointmentData({ ...appointmentData, reason: e.target.value })}
                   />
                 </Form.Group>
                 <div className="d-grid">

@@ -9,13 +9,23 @@ const SpecialistAppointments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredAppointments, setFilteredAppointments] = useState([]);
 
+  // fetch appointments
   useEffect(() => {
-    // Fetch from backend
-    setAppointments([
-      { id: 1, patient: "John Doe", date: "2025-08-15", status: "Pending" },
-      { id: 2, patient: "Jane Smith", date: "2025-08-14", status: "Completed" },
-      { id: 3, patient: "Michael Lee", date: "2025-08-17", status: "Upcoming" },
-    ]);
+    const token = localStorage.getItem("token");
+    const specialistId = localStorage.getItem("user")
+    
+    fetch(`http://localhost:5000/api/appointments/specialist/${specialistId}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setAppointments(Array.isArray(data) ? data : []);
+        // console.log(specialistId);
+      })
+      .catch((err) => console.error("Error fetching appointments:", err));
   }, []);
 
   useEffect(() => {

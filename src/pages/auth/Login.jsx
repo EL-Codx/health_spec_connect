@@ -22,9 +22,9 @@ function LoginUI() {
 
       if (response.ok) {
         login(data); // save user in context
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", data._id);
-        // localStorage.setItem("user", JSON.stringify(data.user));
+        // localStorage.setItem("token", data.token);
+        // localStorage.setItem("user", data._id);
+        localStorage.setItem("user", JSON.stringify(data));
 
         // Redirect based on role
         if (data.role === "admin") navigate("/dashboard");

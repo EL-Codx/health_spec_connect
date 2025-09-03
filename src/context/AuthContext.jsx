@@ -9,7 +9,13 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        // If parsing fails, remove the corrupted user and set user to null
+        localStorage.removeItem("user");
+        setUser(null);
+      }
     }
   }, []);
 
