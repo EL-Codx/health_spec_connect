@@ -17,7 +17,7 @@ const Appointments = () => {
       .then((res) => res.json())
       .then((data) => {
         setAppointments(Array.isArray(data) ? data : []);
-        // console.log(data);
+        console.log(data);
       })
       .catch((err) => console.error("Error fetching appointments:", err));
   }, []);
@@ -45,9 +45,10 @@ const Appointments = () => {
         <tbody>
           {appointments.map((appt, idx) => (
             <tr key={appt._id}>
+              {console.log(appt)}
               <td>{idx + 1}</td>
               <td>{appt.patient.name}</td>
-              <td>{appt.specialist.name || 'Unassigned'}</td>
+              <td>{appt.specialist.name}</td>
               <td>{appt.date}</td>
               <td>{appt.time}</td>
               <td>
