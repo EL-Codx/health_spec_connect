@@ -1,5 +1,6 @@
 // src/App.jsx
 import React from 'react';
+import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import DashboardLayout from './components/shared/DashboardLayout';
 import DashboardHome from './pages/admin/DashboardHome';
