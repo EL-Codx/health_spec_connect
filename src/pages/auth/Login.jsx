@@ -40,7 +40,8 @@ function LoginUI() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="form-container">
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <form
         onSubmit={handleSubmit}
         className="bg-white shadow-lg rounded-lg p-8 w-96"
@@ -69,6 +70,7 @@ function LoginUI() {
           Login
         </button>
       </form>
+    </div>
     </div>
   );
 }

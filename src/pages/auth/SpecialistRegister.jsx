@@ -52,82 +52,84 @@ const SpecialistRegister = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow-md w-full max-w-lg"
-      >
-        <h2 className="text-2xl font-bold mb-4">Specialist Registration</h2>
-
-        <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          onChange={handleChange}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-
-        <input
-          type="text"
-          name="specialization"
-          placeholder="Specialization (e.g., Cardiologist)"
-          onChange={handleChange}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-
-        <input
-          type="text"
-          name="licenseNumber"
-          placeholder="Medical License Number"
-          onChange={handleChange}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-
-        <input
-          type="number"
-          name="experienceYears"
-          placeholder="Years of Experience"
-          onChange={handleChange}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="w-full p-2 mb-3 border rounded"
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-primary text-white py-2 rounded"
+    <div className="form-container">
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white p-6 rounded-xl shadow-md w-full max-w-lg"
         >
-          Register as Specialist
-        </button>
-      </form>
+          <h2 className="text-2xl font-bold mb-4">Specialist Registration</h2>
+
+          <input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            onChange={handleChange}
+            className="w-full p-2 mb-3 border rounded"
+            required
+          />
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            onChange={handleChange}
+            className="w-full p-2 mb-3 border rounded"
+            required
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            onChange={handleChange}
+            className="w-full p-2 mb-3 border rounded"
+            required
+          />
+
+          <input
+            type="text"
+            name="specialization"
+            placeholder="Specialization (e.g., Cardiologist)"
+            onChange={handleChange}
+            className="w-full p-2 mb-3 border rounded"
+            required
+          />
+
+          <input
+            type="text"
+            name="licenseNumber"
+            placeholder="Medical License Number"
+            onChange={handleChange}
+            className="w-full p-2 mb-3 border rounded"
+            required
+          />
+
+          <input
+            type="number"
+            name="experienceYears"
+            placeholder="Years of Experience"
+            onChange={handleChange}
+            className="w-full p-2 mb-3 border rounded"
+            required
+          />
+
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full p-2 mb-3 border rounded"
+          />
+
+          <button
+            type="submit"
+            className="w-full text-white py-2 rounded"
+          >
+            Register as Specialist
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

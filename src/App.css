@@ -2,11 +2,14 @@
 body {
   font-family: 'Inter', sans-serif;
   background: linear-gradient(135deg, #e0f2fe, #fef9c3);
-  min-height: 100vh;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+}
+
+.form-container {
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Card form */
@@ -28,7 +31,6 @@ form h2 {
   color: #1e293b; /* slate-800 */
 }
 
-/* Inputs */
 form input {
   width: 100%;
   padding: 0.75rem;
