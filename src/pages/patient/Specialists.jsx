@@ -24,7 +24,7 @@ const Specialists = () => {
   try {
     const res = await fetch("http://localhost:5000/api/users/specialists");
     const data = await res.json();
-    console.log(data)
+    // console.log(data)
     setSpecialists(data);
     // console.log(data)
   } catch (err) {
@@ -50,12 +50,6 @@ const Specialists = () => {
   const retrieved = localStorage.getItem("user");
   const user = JSON.parse(retrieved)
   const token = localStorage.getItem("token");
-
-  // console.log(token)
-  // console.log(patientId)
-
-  // console.log("Specialist: ", selectedSpecialist._id)
-  // console.log("Patient: ", user._id)
 
   const newAppointment = {
     specialist: selectedSpecialist._id,  
@@ -133,8 +127,8 @@ const Specialists = () => {
               
               <Card.Body className="text-center">
                 <Card.Title>{spec.name}</Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">{spec.specialty}</Card.Subtitle>
-                <Card.Text>{spec.description}</Card.Text>
+                <Card.Subtitle className="mb-2 text-muted">Specialization: {spec.specialization}</Card.Subtitle>
+                <Card.Text>Lisence: {spec.licenseNumber}</Card.Text>
                 <Button variant="primary" onClick={() => handleBookClick(spec)}>
                   Book Appointment
                 </Button>
@@ -153,8 +147,7 @@ const Specialists = () => {
           {selectedSpecialist && (
             <>
               <p>
-                Booking with <strong>{selectedSpecialist.name}</strong> (
-                {selectedSpecialist.specialty})
+                Booking with <strong>{selectedSpecialist.name}</strong>
               </p>
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">

@@ -17,7 +17,7 @@ const Appointments = () => {
       .then((res) => res.json())
       .then((data) => {
         setAppointments(Array.isArray(data) ? data : []);
-        console.log(data);
+        // console.log(data);
       })
       .catch((err) => console.error("Error fetching appointments:", err));
   }, []);
@@ -26,7 +26,6 @@ const Appointments = () => {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h4>Appointments</h4>
-        {/* <Button onClick={() => setShowForm(true)}>Create Appointment</Button> */}
       </div>
 
       <Table bordered hover responsive>
@@ -47,18 +46,18 @@ const Appointments = () => {
             <tr key={appt._id}>
               {console.log(appt)}
               <td>{idx + 1}</td>
-              <td>{appt.patient.name}</td>
-              <td>{appt.specialist.name}</td>
+              <td>{appt.patient ? appt.patient.name : <span className="text-muted">N/A</span>}</td>
+              <td>{appt.specialist ? appt.specialist.name : <span className="text-muted">N/A</span>}</td>
               <td>{appt.date}</td>
               <td>{appt.time}</td>
               <td>
                 <Badge bg={
-                  appt.status === 'Pending' ? 'warning' :
-                  appt.status === 'Approved' ? 'success' :
-                  appt.status === 'Cancelled' ? 'danger' :
+                  appt.status.toLowerCase() === 'pending' ? 'warning' :
+                  appt.status.toLowerCase() === 'approved' ? 'success' :
+                  appt.status.toLowerCase() === 'cancelled' ? 'danger' :
                   'secondary'
                 }>
-                  {appt.status}
+                  {appt.status.toLowerCase()}
                 </Badge>
               </td>
               <td>{appt.reason}</td>
@@ -69,8 +68,7 @@ const Appointments = () => {
           ))}
         </tbody>
       </Table>
-
-      {/* <AppointmentForm show={showForm} onHide={() => setShowForm(false)} onSubmit={handleCreate} /> */}
+      
     </div>
   );
 };

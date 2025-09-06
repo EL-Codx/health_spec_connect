@@ -109,14 +109,14 @@ const Users = () => {
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>
-                  <Button
+                  {/* <Button
                     variant="warning"
                     size="sm"
                     className="me-2"
                     onClick={() => handleEditShow(user)}
                   >
                     Edit
-                  </Button>
+                  </Button> */}
                   <Button
                     variant="danger"
                     size="sm"

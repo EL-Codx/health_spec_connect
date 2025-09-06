@@ -9,13 +9,6 @@ const Users = () => {
     email: "",
     role: "",
   });
-//   const [loading, setLoading] = useState(false);
-//   const [message, setMessage] = useState("");
-
-  // Modal State for Add
-//   const [showModal, setShowModal] = useState(false);
-//   const handleClose = () => setShowModal(false);
-//   const handleShow = () => setShowModal(true);
 
   // Modal State for Edit
   const [showEditModal, setShowEditModal] = useState(false);
@@ -110,19 +103,25 @@ const Users = () => {
                 <td>{user.role}</td>
                 <td>
                   <Button
+                    variant="success"
+                    size="sm"
+                  >
+                    Approve
+                  </Button>
+                  {/* <Button
                     variant="warning"
                     size="sm"
                     className="me-2"
                     onClick={() => handleEditShow(user)}
                   >
                     Edit
-                  </Button>
+                  </Button> */}
                   <Button
                     variant="danger"
                     size="sm"
                     onClick={() => handleDelete(user._id || index)}
                   >
-                    Delete
+                    Deny
                   </Button>
                 </td>
               </tr>

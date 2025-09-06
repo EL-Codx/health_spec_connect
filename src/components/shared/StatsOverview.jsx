@@ -2,11 +2,11 @@ import React from 'react';
 import DashboardCard from './DashbboardCard';
 import { FaUsers, FaUserMd, FaUserInjured, FaCalendarAlt } from 'react-icons/fa';
 
-const StatsOverview = () => {
+const StatsOverview = ({ total_users, total_patient, total_specialist }) => {
   const stats = [
-    { label: 'Users', count: 120, bg: 'primary', icon: <FaUsers size={30} /> },
-    { label: 'Specialists', count: 35, bg: 'success', icon: <FaUserMd size={30} /> },
-    { label: 'Patients', count: 200, bg: 'info', icon: <FaUserInjured size={30} /> },
+    { label: 'Users', count: total_users, bg: 'primary', icon: <FaUsers size={30} /> },
+    { label: 'Specialists', count: total_specialist, bg: 'success', icon: <FaUserMd size={30} /> },
+    { label: 'Patients', count: total_patient, bg: 'info', icon: <FaUserInjured size={30} /> },
     { label: 'Appointments', count: 75, bg: 'warning', icon: <FaCalendarAlt size={30} /> },
   ];
 

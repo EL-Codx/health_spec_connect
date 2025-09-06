@@ -38,6 +38,7 @@ const SpecialistRegister = () => {
 
       if (res.data.success) {
         alert("Specialist registered successfully! Pending admin approval.");
+        // console.log(res.data);
         navigate("/");
       }
     } catch (error) {

@@ -9,11 +9,14 @@ const SpecialistAppointments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredAppointments, setFilteredAppointments] = useState([]);
 
-  // fetch appointments
+  // Get specialist ID from localStorage (user object)
+  const user = JSON.parse(localStorage.getItem("user"));
+  const specialistId = user?._id;
+
+  // fetch appointments for the logged-in specialist
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const specialistId = localStorage.getItem("user")
-    
+    if (!specialistId) return;
     fetch(`http://localhost:5000/api/appointments/specialist/${specialistId}`, {
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -23,16 +26,15 @@ const SpecialistAppointments = () => {
       .then((res) => res.json())
       .then((data) => {
         setAppointments(Array.isArray(data) ? data : []);
-        // console.log(specialistId);
       })
       .catch((err) => console.error("Error fetching appointments:", err));
-  }, []);
+  }, [specialistId]);
 
   useEffect(() => {
     setFilteredAppointments(
       appointments.filter(app =>
-        app.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.status.toLowerCase().includes(searchTerm.toLowerCase())
+        (app.patient?.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (app.status || "").toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
   }, [searchTerm, appointments]);
@@ -42,7 +44,12 @@ const SpecialistAppointments = () => {
     doc.text("Specialist Appointments", 14, 10);
     autoTable(doc, {
       head: [["ID", "Patient", "Date", "Status"]],
-      body: filteredAppointments.map(app => [app.id, app.patient, app.date, app.status]),
+      body: filteredAppointments.map(app => [
+        app._id,
+        app.patient?.name || "N/A",
+        app.date,
+        app.status || "Pending"
+      ]),
     });
     doc.save("appointments.pdf");
   };
@@ -71,7 +78,12 @@ const SpecialistAppointments = () => {
             <FaFilePdf /> PDF
           </button>
           <CSVLink
-            data={filteredAppointments}
+            data={filteredAppointments.map(app => ({
+              ID: app._id,
+              Patient: app.patient?.name || "N/A",
+              Date: app.date,
+              Status: app.status || "Pending"
+            }))}
             filename="appointments.csv"
             className="btn btn-success"
           >
@@ -93,15 +105,16 @@ const SpecialistAppointments = () => {
         </thead>
         <tbody>
           {filteredAppointments.length > 0 ? (
-            filteredAppointments.map(app => (
-              <tr key={app.id}>
-                <td>{app.id}</td>
-                <td>{app.patient}</td>
+            filteredAppointments.map((app, indx )=> (
+              <tr key={app._id}>
+                <td>{indx + 1}</td>
+                <td>{app.patient?.name || "N/A"}</td>
                 <td>{app.date}</td>
                 <td>
-                  {app.status === "Completed" && <span className="badge bg-success">{app.status}</span>}
-                  {app.status === "Pending" && <span className="badge bg-warning">{app.status}</span>}
-                  {app.status === "Upcoming" && <span className="badge bg-primary">{app.status}</span>}
+                  {app.status.toLowerCase() === "completed" && <span className="badge bg-success">{app.status}</span>}
+                  {app.status.toLowerCase() === "pending" && <span className="badge bg-warning">{app.status}</span>}
+                  {app.status.toLowerCase() === "upcoming" && <span className="badge bg-primary">{app.status}</span>}
+                  {!app.status && <span className="badge bg-secondary">Pending</span>}
                 </td>
                 <td className="text-center">
                   {app.status !== "Completed" && (
@@ -123,7 +136,8 @@ const SpecialistAppointments = () => {
         </tbody>
       </table>
     </div>
-  );
-};
+    );
+
+  };
 
 export default SpecialistAppointments;

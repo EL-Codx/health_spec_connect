@@ -4,6 +4,7 @@ import { Table, Button, Form, InputGroup, Modal } from 'react-bootstrap';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
+  // const [userCount, setUserCount] = useState(0)
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -61,6 +62,10 @@ const Users = () => {
       });
 
       const data = await res.json();
+      // const user_count = Object.keys(data).length;
+      // setUserCount(user_count)
+      // console.log(user_count);
+
 
       if (res.ok) {
         setMessage(`User created! Temporary password: ${data.password}`);
@@ -91,6 +96,7 @@ const Users = () => {
       alert("Error updating user. Check console.");
     }
   };
+
 
   // Delete user
   const handleDelete = async (id) => {
@@ -135,6 +141,7 @@ const Users = () => {
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>{user.role}</td>
+                {/* {console.log(user_count)} */}
                 <td>
                   <Button
                     variant="warning"

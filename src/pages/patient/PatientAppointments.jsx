@@ -1,8 +1,29 @@
-import { Container, Button, Table, Modal, Form } from "react-bootstrap";
-import { useState } from "react";
+import { Container, Button, Table } from "react-bootstrap";
+import { useState, useEffect } from "react";
 
 export default function PatientAppointments() {
-  const [show, setShow] = useState(false);
+  const [appointments, setAppointments] = useState([]);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const patientId = user?._id;
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`http://localhost:5000/api/appointments?patient=${patientId}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+        const data = await res.json();
+        setAppointments(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setAppointments([]);
+      }
+    };
+    if (patientId) fetchAppointments();
+  }, [patientId]);
 
   return (
     <Container>
@@ -21,16 +42,25 @@ export default function PatientAppointments() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>2025-08-28</td>
-            <td>10:00 AM</td>
-            <td>Dr. Smith</td>
-            <td>Upcoming</td>
-            <td><Button size="sm" variant="danger">Cancel</Button></td>
-          </tr>
+          {appointments.length > 0 ? (
+            appointments.map((appt) => (
+              <tr key={appt._id}>
+                <td>{appt.date}</td>
+                <td>{appt.time}</td>
+                <td>{appt.specialist ? appt.specialist.name : "N/A"}</td>
+                <td>{appt.status || "Pending"}</td>
+                <td>
+                  <Button size="sm" variant="danger">Cancel</Button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" className="text-center">No appointments found</td>
+            </tr>
+          )}
         </tbody>
       </Table>
-
     </Container>
   );
 }
